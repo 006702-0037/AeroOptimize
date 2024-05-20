@@ -19,17 +19,21 @@ def load_prop(sim, prop):
     vsp.SetParmVal(prop_id, "NumBlade", "Design", prop["BLADE_NUM"])
     vsp.SetParmVal(prop_id, "PropMode", "Design", vsp.PROP_BLADES)
 
+    vsp.SetPCurve(prop_id, 0, prop["CHORD"][0], prop["CHORD"][1], vsp.CEDIT)
+    vsp.SetPCurve(prop_id, 1, prop["TWIST"][0], prop["TWIST"][1], vsp.PCHIP)
+    vsp.SetPCurve(prop_id, 4, prop["SWEEP"][0], prop["SWEEP"][1], vsp.LINEAR)
+
     for i in range(10):
-        vsp.SetParmVal(prop_id, f"crd_{i}", "Chord", prop["BLADE_CHORD"])
-        vsp.SetParmVal(prop_id, f"toc_{i}", "Thick", prop["BLADE_THICKNESS"])
+        vsp.SetParmVal(prop_id, f"toc_{i}", "Thick", prop["THICKNESS"][1][i])
 
-    vsp.SetParmVal(prop_id, f"tw_0", "Twist", prop["BLADE_TIP_PITCH_ANGLE"] * (1 / 0.2))
-    vsp.SetParmVal(prop_id, f"tw_1", "Twist", prop["BLADE_TIP_PITCH_ANGLE"] * (1 / 0.75))
-    vsp.SetParmVal(prop_id, f"tw_2", "Twist", prop["BLADE_TIP_PITCH_ANGLE"])
-
-    vsp.SetParmVal(prop_id, f"Chord", "Design", prop["BLADE_CHORD"])
-    vsp.SetParmVal(prop_id, f"PChord", "Design", prop["BLADE_CHORD"])
-    vsp.SetParmVal(prop_id, f"TChord", "Design", prop["BLADE_CHORD"])
+    '''
+    for some reason doing the above rather than
+    
+        vsp.SetPCurve(prop_id, 7, prop["THICKNESS"][0], prop["THICKNESS"][1], vsp.CEDIT)
+        
+    seems to produce correct results?? even though they theoretically should do the same thing??
+    its so joever.
+    '''
 
     # load params for the prop's unsteady group
     unsteady_prop_id = vsp.FindUnsteadyGroup(0)
